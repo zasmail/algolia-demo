@@ -9,20 +9,44 @@
 html {
 	overflow-y: scroll;
 }
-header, main, #no-results, footer {
-	width: 1000px;
+
+body{
+	background-image: url(../img/background.png);
+	background-repeat: repeat;
+}
+header, main, #no-results, footer, .main-container {
+	max-width: 1000px;
 	margin: 0 auto;
 }
 main {
 	min-height: 360px;
 }
+.white-container{
+	background-color: white;
+}
+div, a{
+	font-family: 'Open Sans';
+	font-size: 14px;
+}
+
+#left-column, #right-column{
+	padding-top: 35px;
+	margin-bottom: 3
+}
 #left-column {
 	float: left;
-	width: 23%;
+	border-right: 1px solid #E6E6E6;
 }
 #right-column {
-	width: 74%;
-	margin-left: 26%;
+	/*width: 74%;
+	margin-left: 26%;*/
+}
+
+.main-container{
+	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+	margin-top: 40px;
+	margin-bottom: 40px;
+	padding: 0 !important;
 }
 
 
@@ -31,9 +55,6 @@ main {
 // ------------------------- */
 
 header {
-	position: relative;
-	height: 80px;
-	margin-top: 40px;
 }
 header img {
 	position: absolute;
@@ -43,13 +64,12 @@ header img {
 	max-width: 23%;
 }
 #search-input {
-	font-size: 28px;
+	font-size: 18px;
 	font-weight: 100;
-	width: 74%;
-	margin-left: 26%;
-	padding: 10px 0 6px;
+	width: 100%;
+	padding: 10px 0px 10px 10px;
 	border: none;
-	border-bottom: 5px solid #eee;
+	border-radius: 3px;
 }
 #search-input, #search-input:focus {
 	transition: border-color .3s ease-in;
@@ -80,6 +100,14 @@ header img {
 	background-image: url(../img/delete_icon.png);
 }
 
+.search-header{
+	height: 100%;
+	width: 100%;
+	background-color: #1c688e;
+	padding-top: 22px;
+	padding-bottom: 22px;
+}
+
 
 
 /* HITS
@@ -88,12 +116,10 @@ header img {
 #hits {
 	margin: 4px 0;
 	padding: 10px 0;
-	border-top: 2px solid #eee;
 }
 .hit {
 	font-size: 0;
 	padding: 8px 0;
-	border-bottom: 1px solid #eee;
 }
 .hit-image {
 	display: inline-block;
@@ -102,13 +128,14 @@ header img {
 .hit-image img {
 	max-width: 100%;
 	max-height: 180px;
+	border-radius: 4px;
 }
 .hit-content {
 	font-size: 13px;
 	font-weight: 300;
 	display: inline-block;
-	width: 83%;
-	margin-left: 1%;
+	width: 80%;
+	margin-left: 3%;
 	vertical-align: top;
 }
 .hit-content .hit-price {
@@ -129,7 +156,74 @@ header img {
 	color: #999;
 }
 
+.one-row-stars{
+  display: inline-block;
+}
 
+.stars{
+  height: 15px;
+	vertical-align: middle;
+}
+
+.stars-count{
+  display: inline-block;
+  vertical-align: middle;
+	margin-bottom: 0;
+}
+
+.reviews-count, .area, .food-type, .price-range{
+  font-size: 14px;
+  vertical-align: middle;
+  display: inline-block;
+  color: rgba(112, 112, 112, 60);
+	margin-top: 5px;
+ 	margin-bottom: 5px;
+
+}
+
+.name{
+	font-family: 'Open Sans';
+	font-size: 16px;
+  font-weight: 800;
+  margin-bottom: 5px;
+  margin-top: 0px;
+}
+
+.see-more{
+	background: transparent;
+	border: none;
+	text-align: left;
+  width: 100%;
+	padding-top: 10px;
+	padding-bottom: 10px;
+}
+
+.see-more:hover .collapse{
+	display: block;
+}
+.see-more:hover .hit-image{
+	-webkit-filter: blur(2px);
+  filter: blur(2px);
+
+}
+.see-more:focus{
+	outline:0;
+}
+
+.btn-reservation{
+	padding: 8px 12px;
+	text-decoration: none;
+	color: #000;
+	border: 1px solid #eee;
+	border-right: none;
+	margin-top: 5px;
+	display: block;
+	width: 145px;
+}
+.btn-reservation:hover{
+	background: #f5f5f5;
+	text-decoration: none;
+}
 
 /* PAGINATION
 // ------------------------- */
@@ -152,9 +246,11 @@ header img {
 	color: #000;
 	border: 1px solid #eee;
 	border-right: none;
+	min-width: 300px;
 }
 #pagination a:hover {
 	background: #f5f5f5;
+	text-decoration: none;
 }
 #pagination li:first-child a {
 	border-top-left-radius: 4px;
@@ -226,10 +322,29 @@ header img {
 	min-height: 18px;
 }
 #stats .found-in {
-	font-size: 12px;
+	font-size: 14px;
 	color: #999;
 }
+#stats h5 {
+	font-size: 16px;
+	font-weight: 800;
+	font-family: 'Open Sans';
+	margin: 0 0 6px;
+	padding: 0 0 6px;
+}
 
+.stats-container{
+  margin-bottom: 10px;
+}
+.stats-left{
+  display: inline-block;
+  width: 275px;
+	text-align: left;
+}
+.stats-right{
+  border-bottom: 1px solid #E6E6E6;
+  width: 100%;
+}
 
 
 /* FACETS
@@ -237,12 +352,13 @@ header img {
 
 .facet {
 	margin-bottom: 24px;
+	font-family: 'Open Sans';
 }
 .facet h5 {
 	margin: 0 0 6px;
 	padding: 0 0 6px;
-	text-transform: uppercase;
-	border-bottom: 2px solid #eee;
+	font-size: 16px;
+	font-weight: 00;
 }
 .facet ul {
 	margin: 0;
@@ -251,25 +367,40 @@ header img {
 }
 .facet li {
 	margin-bottom: 3px;
+	font-size: 14px;
+	height: 25px;
+	padding-left: 5px;
+	padding-right: 5px;
+	vertical-align: middle;
 }
 .facet-link {
-	font-size: 13px;
-	line-height: 1.2;
+	font-size: 14px;
 	text-decoration: none;
 	color: #000;
 }
 .facet-link:hover, .facet-link.facet-refined {
-	color: #ed5565;
+	color: white !important;
+	background-color: #2897C5;
+	border-radius: 3px;
+  height: 25px;
+  line-height: 25px;
 }
 .facet .facet-link.facet-refined:hover {
 	text-decoration: line-through;
-	color: #ed5565;
+	color: white !important;
+	background-color: #2897C5;
+	border-radius: 3px;
+	vertical-align: middle;
+  height: 25px;
+  line-height: 25px;
 }
 .facet-count {
 	position: relative;
-	top: 3px;
 	float: right;
-	color: #999;
+	color: #9A9A9A;
+}
+.facet-count.facet-refined, .facet-count.facet-refined:hover  {
+	color: white;
 }
 /* Checkboxes */
 .facet-disjunctive {
@@ -295,7 +426,40 @@ header img {
 .facet-disjunctive.facet-refined:hover:before {
 	background-position: -72px 0;
 }
+.push-down{
+	padding-top:5px;
+}
 
+.stars-facet-0, .stars-facet-1, .stars-facet-2, .stars-facet-3, .stars-facet-4, .stars-facet-5 {
+	background-color: transparent;;
+  width: 81px;
+  height: 15px;
+  margin-bottom: 8px;
+}
+.stars-facet-0{
+  background-image: url("../img/0-stars.png");
+  background-repeat: no-repeat;
+}
+.stars-facet-1{
+	background-image: url("../img/2-stars.png");
+  background-repeat: no-repeat;
+}
+.stars-facet-2{
+	background-image: url("../img/4-stars.png");
+  background-repeat: no-repeat;
+}
+.stars-facet-3{
+	background-image: url("../img/6-stars.png");
+  background-repeat: no-repeat;
+}
+.stars-facet-4{
+	background-image: url("../img/8-stars.png");
+  background-repeat: no-repeat;
+}
+.stars-facet-5{
+	background-image: url("../img/10-stars.png");
+  background-repeat: no-repeat;
+}
 
 
 /* No-result
@@ -364,7 +528,7 @@ a.clear-all:hover {
 footer {
 	font-size: 14px;
 	margin-top: 200px;
-	margin-bottom: 24px;
+	padding-bottom: 24px;
 	text-align: center;
 }
 footer a {
