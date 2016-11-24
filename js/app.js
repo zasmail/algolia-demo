@@ -5,19 +5,19 @@ $(document).ready(function() {
   // ==============
 
   // Replace with your own values
-  var APPLICATION_ID = 'latency';
-  var SEARCH_ONLY_API_KEY = '6be0576ff61c053d5f9a3225e2a90f76';
-  var INDEX_NAME = 'instant_search';
+  var APPLICATION_ID = 'OF1GIDPUZO';
+  var SEARCH_ONLY_API_KEY = '4b3842f1750f23a0ef2ab0ba2448779b';
+  var INDEX_NAME = 'restaurants';
   var PARAMS = {
     hitsPerPage: 10,
     maxValuesPerFacet: 8,
-    facets: ['type'],
-    disjunctiveFacets: ['categories', 'brand', 'price'],
+    facets: ['food_type', 'stars_rouned', 'payment_options'],
+    disjunctiveFacets: [],
     index: INDEX_NAME
   };
-  var FACETS_SLIDER = ['price'];
-  var FACETS_ORDER_OF_DISPLAY = ['categories', 'brand', 'price', 'type'];
-  var FACETS_LABELS = {categories: 'Category', brand: 'Brand', price: 'Price', type: 'Type'};
+  var FACETS_SLIDER = ['type'];
+  var FACETS_ORDER_OF_DISPLAY = ['food_type', 'stars_rouned', 'payment_options'];
+  var FACETS_LABELS = {food_type: 'Cuisine/Food Type', stars_rounded: 'Rating', payment_options: 'Payment Options' };
 
   // Client + Helper initialization
   var algolia = algoliasearch(APPLICATION_ID, SEARCH_ONLY_API_KEY);
@@ -89,13 +89,29 @@ $(document).ready(function() {
     var stats = {
       nbHits: content.nbHits,
       nbHits_plural: content.nbHits !== 1,
-      processingTimeMS: content.processingTimeMS
+      processingTime: content.processingTimeMS/1000
     };
     $stats.html(statsTemplate.render(stats));
   }
 
   function renderHits(content) {
+    content.hits.forEach(function(restaurant){
+      if(!restaurant.reviews_count){
+        restaurant.reviews_count = 0;
+      }
+      restaurant.target = "#" + restaurant.name + "-id";
+      restaurant.id = restaurant.name + "-id";
+      restaurant.phone_formatted = formatPhoneNumber(restaurant.phone);
+      restaurant.star_image = "img/" + Math.round(2*restaurant.stars_count) + "-stars.png";
+      // restaurant.star_image = "img/" + 3 + "-stars.png";
+    });
     $hits.html(hitTemplate.render(content));
+  }
+
+  function formatPhoneNumber(s) {
+    var s2 = (""+s).replace(/\D/g, '');
+    var m = s2.match(/^(\d{3})(\d{3})(\d{4})$/);
+    return (!m) ? null : "(" + m[1] + ") " + m[2] + "-" + m[3];
   }
 
   function renderFacets(content, state) {
@@ -110,7 +126,7 @@ $(document).ready(function() {
       if ($.inArray(facetName, FACETS_SLIDER) !== -1) {
         facetContent = {
           facet: facetName,
-          title: FACETS_LABELS[facetName] || facetName 
+          title: FACETS_LABELS[facetName] || facetName
         };
         facetContent.min = facetResult.stats.min;
         facetContent.max = facetResult.stats.max;
@@ -123,12 +139,33 @@ $(document).ready(function() {
 
       // Conjunctive + Disjunctive facets
       else {
-        facetContent = {
-          facet: facetName,
-          title: FACETS_LABELS[facetName] || facetName,
-          values: content.getFacetValues(facetName, {sortBy: ['isRefined:desc', 'count:desc']}),
-          disjunctive: $.inArray(facetName, PARAMS.disjunctiveFacets) !== -1
-        };
+        if(facetName=='stars_rouned'){
+          var facets = content.getFacetValues(facetName, {sortBy: ['isRefined:desc', 'count:desc']}).sort(function(a,b){ return a.name - b.name});
+          facets.forEach(function(facet){
+            facet.class = "stars-facet-" + facet.name;
+            facet.displayName = null;
+            facet.displayCount = null;
+          });
+          facetContent = {
+            facet: facetName,
+            title: 'Rating',
+            values: facets,
+            disjunctive: $.inArray(facetName, PARAMS.disjunctiveFacets) !== -1
+          };
+
+        } else{
+          var facets = content.getFacetValues(facetName, {sortBy: ['isRefined:desc', 'count:desc']});
+          facets.forEach(function(facet){
+            facet.displayName = facet.name;
+            facet.displayCount = facet.count;
+          });
+          facetContent = {
+            facet: facetName,
+            title: FACETS_LABELS[facetName] || facetName,
+            values: facets,
+            disjunctive: $.inArray(facetName, PARAMS.disjunctiveFacets) !== -1
+          };
+        }
         facetsHtml += facetTemplate.render(facetContent);
       }
     }
@@ -152,7 +189,7 @@ $(document).ready(function() {
           }
         }
     }
-    
+
     // Bind Sliders
     for (var facetIndex = 0; facetIndex < FACETS_SLIDER.length; ++facetIndex) {
       var facetName = FACETS_SLIDER[facetIndex];

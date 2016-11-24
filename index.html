@@ -9,62 +9,64 @@
   <!-- /CSS -->
 </head>
 <body>
+  <div class="main-container col-xs-12 col-sm-10 col-sm-offset-1 ">
+    <header class="search-header col-xs-12">
+      <input id="search-input" type="text" autocomplete="off" spellcheck="false" autocorrect="off" placeholder="Search for Restaurant by Name, Cuisine, Location"/>
+    </header>
 
 
-  <!-- Header -->
-  <header>
-    <img src="img/instant_search_logo@2x.png"/>
-    <input id="search-input" type="text" autocomplete="off" spellcheck="false" autocorrect="off" placeholder="Search by name, brand, description..."/>
-    <div id="search-input-icon"></div>
-  </header>
-  <!-- /Header -->
+    <!-- Main -->
+    <div class="white-container">
+      <main>
+      <!-- Left Column -->
+        <div id="left-column" class="col-xs-12 col-sm-3">
+          <div id="facets"></div>
+          <a href="" class='clear-all'>Clear all</a>
+        </div>
 
+        <!-- Right Column -->
+        <div id="right-column" class="col-xs-12 col-sm-9">
+          <div id="stats"></div>
+          <div id="hits"></div>
+          <div id="pagination"></div>
+        </div>
+      </main>
+      <!-- /Main -->
 
-  <!-- Main -->
-  <main>
-    <!-- Left Column -->
-    <div id="left-column">
-      <div id="facets"></div>
+      <!-- Footer -->
+      <footer>
+        Powered by Algolia
+      </footer>
+      <!-- /Footer -->
     </div>
-
-    <!-- Right Column -->
-    <div id="right-column">
-      <div id="sort-by">Sort by:
-        <select dir="rtl" id="sort-by-select">
-          <option value="" selected>Most relevant</option>
-          <option value="_price_asc">Lowest Price</option>
-          <option value="_price_desc">Highest Price</option>
-        </select>
-        <span class="caret"></span>
-      </div>
-      <div id="stats"></div>
-      <div id="hits"></div>
-      <div id="pagination"></div>
-    </div>
-  </main>
-  <!-- /Main -->
-
-
-  <!-- Footer -->
-  <footer>
-    Source Code on <a href="http://github.com/algolia/instant-search-demo">Github</a> -
-    Powered by <a href="http://algolia.com">Algolia</a> - Data from <a href="https://developer.bestbuy.com">Best Buy</a>
-  </footer>
-  <!-- /Footer -->
-
-
+  </div>
 
   <!-- Hit template -->
   <script type="text/template" id="hit-template">
     {{#hits}}
-    <div class="hit">
+    <div class="hit see-more">
       <div class="hit-image">
-        <img src="{{ image }}" alt="{{ name }}">
+        <img src="{{ image_url }}" alt="{{ name }}">
       </div>
       <div class="hit-content">
-        <h3 class="hit-price">${{ price }}</h3>
-        <h2 class="hit-name">{{{ _highlightResult.name.value }}}</h2>
-        <p class="hit-description">{{{ _highlightResult.description.value }}}</p>
+        <p class="name">{{ name }}</p>
+        <p class="stars-count">{{ stars_count }}</p>
+        <div class="one-row-stars">
+          <!-- <img class="stars" src="img/0-stars.png" alt="stars"> -->
+          <img class="stars" src={{ star_image}} alt="stars">
+        </div>
+        <p class="reviews-count">({{ reviews_count }} reviews)</p>
+        <br>
+        <p class="area">{{ area }}</p> |
+        <p class="food-type">{{ food_type }}</p> |
+        <p class="price-range">{{ price_range }}</p>
+
+        </br>
+        <div class="collapse" id={{id}}>
+          <p class="area">{{address}}, {{city}} {{state}}</p> |
+          <p class="price-range">{{ phone_formatted }}</p> </br>
+          <a href={{reserve_url}} target="_blank" class="btn-reservation">Make Reservation</a>
+        </div>
       </div>
     </div>
     {{/hits}}
@@ -72,7 +74,12 @@
 
   <!-- Stats template -->
   <script type="text/template" id="stats-template">
-    {{ nbHits }} Result{{#nbHits_plural}}s{{/nbHits_plural}} <span class="found-in">Found in {{ processingTimeMS }}ms</span>
+    <table class="stats-container">
+      <tr>
+        <th class="stats-left"><h5 class="stats-results">{{ nbHits }} Result{{#nbHits_plural}}s{{/nbHits_plural}} Found <span class="found-in">in {{ processingTime }} seconds</span></h5></th>
+        <th class="stats-right"></th>
+      </tr>
+    </table>
   </script>
 
   <!-- Facet template -->
@@ -81,9 +88,10 @@
       <h5>{{ title }}</h5>
       <ul>
         {{#values}}
-        <li>
+        <li class="facet-link toggle-refine {{#disjunctive}}facet-disjunctive{{/disjunctive}} {{#isRefined}}facet-refined{{/isRefined}}">
           <a href="" class="facet-link toggle-refine {{#disjunctive}}facet-disjunctive{{/disjunctive}} {{#isRefined}}facet-refined{{/isRefined}}" data-facet="{{ facet }}" data-value="{{ name }}">
-            {{ name }}<span class="facet-count">{{ count }}</span>
+            {{#class}}<div class="push-down"><div class={{class}}></div></div>{{/class}}
+            {{ displayName }}<span class="facet-count {{#disjunctive}}facet-disjunctive{{/disjunctive}} {{#isRefined}}facet-refined{{/isRefined}}">{{ displayCount }}</span>
           </a>
         </li>
         {{/values}}
@@ -102,11 +110,8 @@
   <!-- Pagination template -->
   <script type="text/template" id="pagination-template">
     <ul>
-      <li {{^prev_page}}class="disabled"{{/prev_page}}><a href="#" {{#prev_page}}class="go-to-page" data-page="{{ prev_page }}"{{/prev_page}}>&#60;</a></li>
-      {{#pages}}
-      <li class="{{#current}}active{{/current}} {{#disabled}}disabled{{/disabled}}"><a href="#" {{^disabled}} class="go-to-page" data-page="{{ number }}" {{/disabled}}>{{ number }}</a></li>
-      {{/pages}}
-      <li {{^next_page}}class="disabled"{{/next_page}}><a href="#" {{#next_page}}class="go-to-page" data-page="{{ next_page }}"{{/next_page}}>&#62;</a></li>
+      {{#prev_page}}<li {{^prev_page}}class="disabled"{{/prev_page}}><a href="#" {{#prev_page}}class="go-to-page" data-page="{{ prev_page }}"{{/prev_page}}>Show Previous</a></li>{{/prev_page}}
+      {{#next_page}}<li {{^next_page}}class="disabled"{{/next_page}}><a href="#" {{#next_page}}class="go-to-page" data-page="{{ next_page }}"{{/next_page}}>Show More</a></li>{{/next_page}}
     </ul>
   </script>
 
@@ -135,6 +140,11 @@
   <script src="//cdn.jsdelivr.net/hogan.js/3.0.2/hogan.min.common.js"></script>
   <script src="//cdn.jsdelivr.net/jquery.ion.rangeslider/2.0.12/js/ion.rangeSlider.min.js"></script>
   <script src="js/app.js"></script>
+  <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Open+Sans" />
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
   <!-- /Javascript -->
 
 </body>
